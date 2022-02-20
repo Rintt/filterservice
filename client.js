@@ -6,7 +6,7 @@ const PROTO_PATH = path.join(__dirname, './proto/demo.proto');
 const PORT = 5001;
 
 const shopProto = grpc.load(PROTO_PATH).hipstershop;
-const client = new shopProto.FilterService(`localhost:${PORT}`,
+const client = new shopProtoFilterService(`localhost:${PORT}`,
   grpc.credentials.createInsecure());
 
 const logger = pino({
@@ -24,7 +24,7 @@ client.getSupportedCategories({}, (err, response) => {
   if (err) {
     logger.error(`Error in getSupportedCategories: ${err}`);
   } else {
-    logger.info(`filter codes: ${response.filter_codes}`);
+    logger.info(`filter codes: ${response}`);
   }
 });
 

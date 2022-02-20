@@ -1,4 +1,5 @@
 //setups
+const functionality = require('./functionality.js')
 const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const pino = require('pino');
@@ -32,45 +33,9 @@ function _loadProto(path) {
   );
   return grpc.loadPackageDefinition(packageDefinition);
 }
-//getproducts as an internal function to query for the available products
-function _getProducts(callback) {
-  const data = require('./data/product_catalog.json');
-  console.log(data.products);
-  if (callback) {
-    callback(data.products);
-  }
-}
-//get all possible categories within the products
-function getSupportedCategories(callback) {
-  logger.info('Getting supported categories...');
-  cat = []
-    _getProducts((data) => {
-      data.forEach(ele => ele.categories.forEach(item => cat.push(item)))
-    });
-  if (callback) {
-  callback(cat);
-  }
-}
-//filter the products with the given filter_code inside call
-function filter(call, callback) {
-  try {
-    _getProducts((data) => {
-      const request = call.request;
-      results = []
-      data.map(ele => {
-        ele.categories.includes(request.filter_code) ? results.push(ele) : null
-      })
-      logger.info(`filter request successful`);
-      console.log(results)
-      if (callback) {
-        callback(null, results);
-      }
-    });
-  } catch (err) {
-    logger.error(`filter request failed: ${err}`);
-    callback(err.message);
-  }
-}
+const _getProducts = (callback) => functionality._getProducts(callback => callback);
+const getSupportedCategories = (callback) => functionality.getSupportedCategories(callback => callback);
+const filter = (call, callback) => functionality.filter(call, callback => callback);
 
 /**
  * Endpoint for health checks
@@ -95,10 +60,8 @@ function main () {
       server.start();
     },
    );
-  // possible functions to test 
-  //  _getProducts(data => console.log(data))
-  //  getSupportedCategories(data => console.log(data))
-  //  filter({request : {filter_code: 'kitchen'}}, data => console.log(data))
+
+   filter({request : {filter_code: 'kitchen'}}, data => console.log(data))
 }
 
 main();
