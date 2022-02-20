@@ -55,12 +55,12 @@ const pino = require('pino');
 const protoLoader = require('@grpc/proto-loader');
 
 const MAIN_PROTO_PATH = path.join(__dirname, './proto/demo.proto');
-// const HEALTH_PROTO_PATH = path.join(__dirname, './proto/grpc/health/v1/health.proto');
+const HEALTH_PROTO_PATH = path.join(__dirname, './proto/grpc/health/v1/health.proto');
 
 const PORT = 5001;
 
 const shopProto = _loadProto(MAIN_PROTO_PATH).hipstershop;
-// const healthProto = _loadProto(HEALTH_PROTO_PATH).grpc.health.v1;
+const healthProto = _loadProto(HEALTH_PROTO_PATH).grpc.health.v1;
 
 const logger = pino({
   name: 'filterservice-server',
@@ -159,7 +159,7 @@ function main () {
   const server = new grpc.Server();
   server.addService(shopProto.FilterService.service, {getSupportedCategories, filter});
     // , convert});
-  // server.addService(healthProto.Health.service, {check});
+  server.addService(healthProto.Health.service, {check});
 
   server.bindAsync(
     `0.0.0.0:${PORT}`,
